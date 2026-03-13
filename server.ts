@@ -32,6 +32,11 @@ app.get('/api/games', (_req: any, res: any) => {
   res.json(games);
 });
 
+// Expose API key to frontend at runtime
+app.get('/api/config', (_req: any, res: any) => {
+  res.json({ apiKey: process.env.GEMINI_API_KEY || "" });
+});
+
 // Serve the built React app
 app.use(express.static(path.join(__dirname, 'dist')));
 app.get('*', (_req: any, res: any) => {

@@ -4,7 +4,10 @@ import ReactMarkdown from 'react-markdown';
 import { floatTo16BitPCM, base64ToFloat32Array, downsampleTo16kHz, arrayBufferToBase64 } from './utils/audio-utils';
 import { Mic, Video, User, Users, Play, Square, ShieldAlert, Brain, ChevronLeft, Activity, Eye, Radio, Bot } from 'lucide-react';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+let ai: GoogleGenAI | null = null;
+fetch('/api/config').then(r => r.json()).then(({ apiKey }) => {
+  ai = new GoogleGenAI({ apiKey });
+});
 
 const calculateSuspicion = (transcript: string): number => {
   const t = transcript.toLowerCase();
@@ -119,7 +122,7 @@ export default function App() {
     if (!truth) {
       setGameState('topic');
       try {
-        const response = await ai.models.generateContent({
+        const response = await ai!.models.generateContent({
           model: "gemini-3-flash-preview",
           contents: "Give me a single vivid, specific, and unusual scenario for someone to fabricate a convincing lie about. Make it interesting and memorable — avoid boring generic everyday situations. It should be plausible but surprising. Examples of the quality I want: 'I accidentally sat next to a serial killer on a long-haul flight and didn't find out until we landed', 'I was mistaken for a famous chef at a Michelin-star restaurant and had to bluff my way through', 'I found a bag of cash buried under the floorboards when renovating my apartment'. Output ONLY the scenario sentence, nothing else."
         });
@@ -289,7 +292,7 @@ export default function App() {
          - If the story was TRUE, briefly explain the real historical event or fact.
          - If the story was FALSE, just gloat playfully.`;
 
-      const sessionPromise = ai.live.connect({
+      const sessionPromise = ai!.live.connect({
         model: "gemini-2.5-flash-native-audio-preview-09-2025",
         callbacks: {
           onopen: () => {
@@ -715,7 +718,7 @@ export default function App() {
     if (gameMode === 'storyteller' && aiStoryTruth) {
       setIsLoadingDetails(true);
       try {
-        const response = await ai.models.generateContent({
+        const response = await ai!.models.generateContent({
           model: "gemini-3-flash-preview",
           contents: `The following is a transcript of a true story told by an AI: "${aiStoryTextRef.current}". Please identify the real historical event, scientific fact, or phenomenon it describes, and provide a concise, factual summary (2-3 paragraphs) with real names, dates, and details.`
         });
