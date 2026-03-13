@@ -1,0 +1,5 @@
+{
+  "name": "Story Truth/Lie Game",
+  "description": "An AI-powered game where you tell a story and the AI tries to determine if it's true or false.",
+  "requestFramePermissions": ["microphone", "camera"]
+}
