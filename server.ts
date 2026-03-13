@@ -1,9 +1,6 @@
 import express from 'express';
 import Database from 'better-sqlite3';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(express.json());
@@ -38,9 +35,10 @@ app.get('/api/config', (_req: any, res: any) => {
 });
 
 // Serve the built React app
-app.use(express.static(path.join(__dirname, 'dist')));
+const distPath = path.join(process.cwd(), 'dist');
+app.use(express.static(distPath));
 app.get('*', (_req: any, res: any) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 8080;
